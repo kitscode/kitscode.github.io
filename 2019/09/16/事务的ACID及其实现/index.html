@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 事务的ACID及其实现 · kev's blog</title><meta name="description" content="事务的ACID及其实现 - kevin"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/hermes.css"><link rel="search" type="application/opensearchdescription+xml" href="https://kevll.com/atom.xml" title="kev's blog"><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="kev's blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a class="logo-link" href="/"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a class="nav-list-link" href="/" target="_self">BLOG</a></li><li class="nav-list-item"><a class="nav-list-link" href="/archives/" target="_self">ARCHIVE</a></li><li class="nav-list-item"><a class="nav-list-link" href="https://github.com/kitscode" target="_blank">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">事务的ACID及其实现</h1><div class="post-info">2019年9月16日</div><div class="post-content"><p>在软件开发中，后端的实质就是操作数据，储存数据，那就要与各种数据库打交道。在数据库中，为了保证数据的一致性，规定了一个“事务”的概念，它是一系列数据库操作的集合。ACID是事务的四个重要的特性，理解这四个特性及它们的实现原理可以在一定程度上理解数据库到底是怎样工作的。<span id="more"></span></p>
+<h2 id="Atomicity-原子性"><a href="#Atomicity-原子性" class="headerlink" title="Atomicity(原子性)"></a>Atomicity(原子性)</h2><blockquote>
+<p>在一个事务中的若干个数据库操作，要么全部执行成功，要么全部不执行。任何时候，事务为一个整体，是一个不可被打断的一个操作集合。</p>
+</blockquote>
+<p>在一个事务的执行中，如果遇到异常，则需要进行一种叫做“回滚”的操作，它会对已经执行过的操作进行回滚，从而保证数据回到这一系列操作集合都没有被执行的状态。Mysql中，所有的数据库操作都会先被记录到一个回滚日志(undo log)中，然后再将数据写入磁盘。这个回滚日志是一个逻辑日志，对应着实际修改语句的反向操作，例如insert语句对应的就是delete语句，update语句对应一条相反的update。这样在程序发现异常的时候，数据库就可以执行这些语句，尝试将数据恢复到事务执行之前的样子，从而保证事务操作的原子性。<br>值得注意的是，事务只能保证对数据库操作的原子性，如果在事务中有其它的操作，例如向其它系统发送一条消息、向用户发送邮件，这些都是无法再撤销的，需要开发者去解决这些问题。（我自身就处理过这样的问题，当时要在事务结束的时候发送一条扣款的MQ，但是当程序发生异常需要回滚的时候，这条发出去的消息就无法撤销了。所以要将这个操作放在最后执行，尽量也要放在事务之外，防止消费者在操作这条消息的时候拿到的是前者事务还未提交的数据。</p>
+<h2 id="Durability-持久性"><a href="#Durability-持久性" class="headerlink" title="Durability(持久性)"></a>Durability(持久性)</h2><blockquote>
+<p>事务被提交后，需要保证被改变数据的持久性，即使数据库出现故障，例如宕机或停电都不会受影响。</p>
+</blockquote>
+<p>事务的持久性也是通过日志来实现，Mysql中用重做日志(redo log)记录了一个事务内的所有数据库操作。这些操作会先被记到日志中，然后将改变写入数据库。日志也是记在硬盘上的，在发生错误时，数据库可以重新从重做日志中找到相应的信息来继续执行操作，从而保证事务的持久性。</p>
+<h2 id="Isolation-隔离性"><a href="#Isolation-隔离性" class="headerlink" title="Isolation(隔离性)"></a>Isolation(隔离性)</h2><blockquote>
+<p>并发访问数据库的时候，一个事务的操作不受其它的事务影响，并发的多个事务间保持相互独立。</p>
+</blockquote>
+<p>在实际的情况下，对数据的访问不会是串行的，通常是多个线程或者多个进程同时访问同一行数据。那么这个时候谁拿到什么样的数据，就是数据库要进行控制的内容，这也是一个比较复杂的内容，因为涉及到了并发和数据一致性的问题。数据库实现了几种并发情况下对数据库访问的规则，分为了四个不同的级别，它们称为事务的隔离级别。它们是：</p>
+<ol>
+<li>Read Uncommited</li>
+<li>Read Commited</li>
+<li>Repeatable Read</li>
+<li>Serialize</li>
+</ol>
+<p>需要注意的是，随着隔离级别越来越高，数据库处理并发事务的性能也越来越低，到了最后的Serialize就是把所有的并行操作当作串行来操作了。这些隔离级别并不能保证你读到的数据就是对的，它只是确定了在并发的情况下以怎样的方式去读取数据。隔离级别的实现就是使用并发控制，这里介绍两种常见的实现：</p>
+<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p>数据库一般有两种锁，共享锁和互斥锁，又称为读锁和写锁。共享锁是相互兼容的，它允许多个事务进行并发的读操作，而互斥锁顾名思义，是相互排斥的，同一时刻只能有一个事务拿到这把锁。从而实现并行读，串行写的数据操作效果。</p>
+<h3 id="多版本"><a href="#多版本" class="headerlink" title="多版本"></a>多版本</h3><p>在Mysql中有一个叫MVCC的的实现，其中官方文档描述如下：</p>
+<blockquote>
+<p>Acronym for “multiversion concurrency control”. This technique lets InnoDB transactions with certain isolation levels perform consistent read operations; that is, to query rows that are being updated by other transactions, and see the values from before those updates occurred. This is a powerful technique to increase concurrency, by allowing queries to proceed without waiting due to locks held by the other transactions.<br>This technique is not universal in the database world. Some other database products, and some other MySQL storage engines, do not support it.</p>
+</blockquote>
+<p>文中意思就是这个称为“多版本并发控制”的机制，可以在特定隔离级别下保证事务一致性地去读取数据。就是查询正在被其它事务更新的数据的原始值，这样增强了数据库的并发事务的处理能力，查询操作不需要等待其它事务释放锁。</p>
+<h2 id="Consistency-一致性"><a href="#Consistency-一致性" class="headerlink" title="Consistency(一致性)"></a>Consistency(一致性)</h2><blockquote>
+<p>事务的一致性是一个比较特殊的属性，它需要数据库和开发者来共同实现。在事务执行的前后，数据从一个正确的状态迁移至另一个正确的状态。其中正确的状态指的是数据本身的约束及应用层的约束保持不被破坏。</p>
+</blockquote>
+<h3 id="数据本身的约束："><a href="#数据本身的约束：" class="headerlink" title="数据本身的约束："></a>数据本身的约束：</h3><p>数据本身应当保证正确性，例如不可被改变为其它类型，不可破坏主键约束，不可破坏唯一性以及其它在表设计完后已经规定好的约束。</p>
+<h3 id="应用层的约束："><a href="#应用层的约束：" class="headerlink" title="应用层的约束："></a>应用层的约束：</h3><p>例如在表中有余额字段，其应用层的正确性，或者说是业务层的正确性就是该值不能小于0，如果该字段在数据库中没有不小于0的约束的话，这个数据的正确性只能由开发者保证。</p>
+<blockquote>
+<p>在事务执行的时候，也要保证别的事务读取数据的正确性和一致性，也就是事务操作数据的中间状态对其它事务不可见。</p>
+</blockquote>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://draveness.me/mysql-transaction">『浅入深出』MySQL 中事务的实现</a><br><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.5/en/glossary.html">Mysql术语表</a><br><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/31346392">如何理解数据库事务中的一致性的概念？</a></p>
+</div></article></div></main><footer><div class="paginator"><a class="prev" href="/2019/10/02/%E7%90%86%E8%A7%A3GC%E7%AE%97%E6%B3%95%E4%B8%8E%E6%94%B6%E9%9B%86%E5%99%A8/">PREV</a><a class="next" href="/2019/08/04/%E7%90%86%E8%A7%A3%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">NEXT</a></div><div class="copyright"><p>© 2018 - 2022 <a href="https://kevll.com">kevin</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/claymcleod/hexo-theme-hermes" target="_blank">hexo-theme-hermes</a>. </p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

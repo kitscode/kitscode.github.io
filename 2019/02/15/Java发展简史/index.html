@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Java发展简史 · kev's blog</title><meta name="description" content="Java发展简史 - kevin"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/hermes.css"><link rel="search" type="application/opensearchdescription+xml" href="https://kevll.com/atom.xml" title="kev's blog"><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="kev's blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a class="logo-link" href="/"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a class="nav-list-link" href="/" target="_self">BLOG</a></li><li class="nav-list-item"><a class="nav-list-link" href="/archives/" target="_self">ARCHIVE</a></li><li class="nav-list-item"><a class="nav-list-link" href="https://github.com/kitscode" target="_blank">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Java发展简史</h1><div class="post-info">2019年2月15日</div><div class="post-content"><p>作为个人专业和目前工作使用最多的语言，Java对我的影响很大。目前Java 11都已经发布了，然而大部分公司还是在使用Java 8及以下的版本。不经感叹Java发展之迅速，编码行业的技术日新月异，不知道会不会哪一天也学不动了。在不断发展的同时也要去了解它的历史与发展历程，这样才会对一个事物有更好的理解。以下是我个人收集和整理的一段简易Java发展史。<span id="more"></span></p>
+<p>在20世纪90年代，单片式计算机系统出现，其价格低廉。Sun公司为了抢占市场，在1991年成立了名为Green的开发小组，专门研究在家电产品上的嵌入式应用，当时的开发人员有：帕特里克·诺顿(Patrick Naughton)、詹姆斯·高斯林(James Gosling)、麦克·舍林丹(Mike Sheridan)。</p>
+<p>他们首先考虑使用C++来编写程序，但是由于单片机系统的硬件资源匮乏，C++过于复杂与庞大，电子产品的嵌入式处理器芯片种类繁杂，如何让软件跨平台运行也是难题。因此他们决定编写一款新的语言，他们结合单片机系统的要求对C++进行了改造，放弃了C++中的多继承和指针等概念，实现了一套自己的内存管理机制，变得更简单易用。他们假设了一种结构简单、符合嵌入式应用需要的硬件平台体系结构并为其制定了相应的规范，其中就定义了这种硬件平台的二进制机器码指令系统（即后来成为“字节码”的指令系统），以待语言开发成功后，能有半导体芯片生产商开发和生产这种硬件平台。</p>
+<p>这个新的语言一开始是以高斯林办公室外的一棵橡树命名为Oak，在注册商标时发现已被抢注，后来更名Green，最后确定为Java，源自于Green小组人员喝的以印尼爪哇(Java)岛出产的咖啡。</p>
+<p>一开始的时候Green更本没有想到Oak会与电脑、互联网产生联系，它只是一个用来解决诸如电视机、电话、面包机等家用电器的控制和通讯问题。然而Oak后期并没有得到硬件厂商的支持，而被搁置。1994年的时候团队决定改变方向，将技术应用于万维网，由此产生了Applet。Applet是一种将小程序嵌入到网页中进行执行的技术），并将Oak正式更名为Java。</p>
+<p>1995年5月23日，Sun公司在Sun world会议上正式发布Java和HotJava浏览器。</p>
+<p>1997年11月17日，国际标准化组织（ISO）同意采纳Sun公司的专利技术——Java作为ISO标准。JAVA作为一个技术标准供公众无偿使用。根据ISO的批准，Sun公司将可提交JAVA的标准化平台规范。</p>
+<p>2009年，甲骨文公司宣布收购Sun。2010年，Java编程语言的共同创始人之一詹姆斯·高斯林从Oracle公司辞职。2011年，甲骨文公司举行了全球性的活动，以庆祝Java7的推出，随后Java7正式发布。2014年，甲骨文公司发布了Java8正式版。</p>
+<p>直至目前的Java版本历代更新，以及部分更新内容如下所示：</p>
+<h4 id="JDK-1-0-January-23-1996"><a href="#JDK-1-0-January-23-1996" class="headerlink" title="JDK 1.0 (January 23, 1996)"></a>JDK 1.0 (January 23, 1996)</h4><ul>
+<li>Java第一个正式版本JDK1.0.2发布</li>
+</ul>
+<h4 id="JDK-1-1-February-19-1997"><a href="#JDK-1-1-February-19-1997" class="headerlink" title="JDK 1.1 (February 19, 1997)"></a>JDK 1.1 (February 19, 1997)</h4><ul>
+<li>引入JavaBeans</li>
+<li>引入JDBC</li>
+<li>引入RMI</li>
+</ul>
+<h4 id="J2SE-1-2-December-8-1998-Palyground-操场"><a href="#J2SE-1-2-December-8-1998-Palyground-操场" class="headerlink" title="J2SE 1.2 (December 8, 1998) (Palyground, 操场)"></a>J2SE 1.2 (December 8, 1998) (Palyground, 操场)</h4><ul>
+<li>引入Swing API</li>
+<li>Sun的JVM第一次引入JIT即时编译器</li>
+<li>版本名改为J2SE，为了与J2EE和J2ME区分开来。这是一个很重要的版本更新，59个package中的class增加了3倍到1520个</li>
+</ul>
+<h4 id="J2SE-1-3-May-8-2000-Kestrel-红隼"><a href="#J2SE-1-3-May-8-2000-Kestrel-红隼" class="headerlink" title="J2SE 1.3 (May 8, 2000) (Kestrel, 红隼)"></a>J2SE 1.3 (May 8, 2000) (Kestrel, 红隼)</h4><ul>
+<li>引入HotSpot JVM</li>
+<li>引入JavaSound（不知道是啥）</li>
+</ul>
+<h4 id="J2SE-1-4-February-6-2002-Merlin-隼"><a href="#J2SE-1-4-February-6-2002-Merlin-隼" class="headerlink" title="J2SE 1.4 (February 6, 2002) (Merlin, 隼)"></a>J2SE 1.4 (February 6, 2002) (Merlin, 隼)</h4><ul>
+<li>引入断言</li>
+<li>引入正则表达式</li>
+<li>支持IPv6</li>
+<li>引入NIO</li>
+<li>引入XML处理</li>
+<li>引入Image I&#x2F;O API</li>
+</ul>
+<h4 id="J2SE-5-0-September-30-2004-Tiger-老虎"><a href="#J2SE-5-0-September-30-2004-Tiger-老虎" class="headerlink" title="J2SE 5.0 (September 30, 2004) (Tiger, 老虎)"></a>J2SE 5.0 (September 30, 2004) (Tiger, 老虎)</h4><ul>
+<li>引入泛型</li>
+<li>引入元数据，也称之为注解</li>
+<li>自动拆装箱</li>
+<li>可变参数 (String… args)</li>
+<li>增强的循环 for each</li>
+<li>引入Lock，代码级的锁</li>
+<li>版本代号由原本的1.5改为5.0</li>
+<li>加入Concurrent包</li>
+</ul>
+<h4 id="Java-SE-6-December-11-2006-Mustang-野马"><a href="#Java-SE-6-December-11-2006-Mustang-野马" class="headerlink" title="Java SE 6 (December 11, 2006) (Mustang, 野马)"></a>Java SE 6 (December 11, 2006) (Mustang, 野马)</h4><ul>
+<li>JDBC 4.0</li>
+<li>支持脚本语言</li>
+<li>GUI的升级与优化</li>
+</ul>
+<h4 id="Java-SE-7-July-28-2011-Dolphin-海豚"><a href="#Java-SE-7-July-28-2011-Dolphin-海豚" class="headerlink" title="Java SE 7 (July 28, 2011) (Dolphin, 海豚)"></a>Java SE 7 (July 28, 2011) (Dolphin, 海豚)</h4><ul>
+<li>JVM支持动态语言</li>
+<li>swith支持String作为参数</li>
+<li>一个语句块可以捕获多种异常</li>
+<li>NIO 2.0</li>
+</ul>
+<h4 id="Java-SE-8-March-18-2014"><a href="#Java-SE-8-March-18-2014" class="headerlink" title="Java SE 8 (March 18, 2014)"></a>Java SE 8 (March 18, 2014)</h4><ul>
+<li>引入Lambda表达式</li>
+<li>引入管道和流</li>
+<li>引入新的日期和时间的API</li>
+<li>接口允许有默认实现</li>
+<li>引入函数式接口</li>
+</ul>
+<h4 id="Java-SE-9-September-21-2017"><a href="#Java-SE-9-September-21-2017" class="headerlink" title="Java SE 9 (September 21, 2017)"></a>Java SE 9 (September 21, 2017)</h4><ul>
+<li>模块化</li>
+<li>集合工厂方法</li>
+<li>私有接口方法</li>
+<li>JShell交互式编程环境</li>
+</ul>
+<h4 id="Java-SE-10-March-20-2018"><a href="#Java-SE-10-March-20-2018" class="headerlink" title="Java SE 10 (March 20, 2018)"></a>Java SE 10 (March 20, 2018)</h4><ul>
+<li>局部变量类型推断 var</li>
+<li>GC改进和内存管理</li>
+</ul>
+<h4 id="Java-SE-11-September-25-2018"><a href="#Java-SE-11-September-25-2018" class="headerlink" title="Java SE 11 (September 25, 2018)"></a>Java SE 11 (September 25, 2018)</h4><ul>
+<li>引入ZGC</li>
+<li>安全类库、标准等方面的大范围升级</li>
+</ul>
+<p>高司令很喜欢说的一个故事是：你知道巴西的税务系统，亚马逊的Kindle阅读器以及韩国的第一大镁板制造厂有什么共同点吗?这些系统同世界上其它100亿个设备共享一个元素，那就是Java。</p>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_(programming_language)">维基百科-Java(programming language)</a><br><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Java/85979?fr=aladdin">百度百科-Java(计算机编程语言)</a><br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_version_history">维基百科-Java version history</a><br><a target="_blank" rel="noopener" href="http://oracle.com.edgesuite.net/timeline/java/">Java Timeline</a></p>
+<p>last update: 2019-10-01</p>
+</div></article></div></main><footer><div class="paginator"><a class="prev" href="/2019/04/09/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E7%9A%84%E5%90%84%E7%A7%8D%E2%80%9C%E7%B1%BB%E5%88%AB%E2%80%9D/">PREV</a><a class="next" href="/2018/11/05/%E5%85%B3%E4%BA%8Esynchronized%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">NEXT</a></div><div class="copyright"><p>© 2018 - 2022 <a href="https://kevll.com">kevin</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/claymcleod/hexo-theme-hermes" target="_blank">hexo-theme-hermes</a>. </p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

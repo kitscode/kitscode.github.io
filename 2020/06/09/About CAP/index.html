@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> About CAP · kev's blog</title><meta name="description" content="About CAP - kevin"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/hermes.css"><link rel="search" type="application/opensearchdescription+xml" href="https://kevll.com/atom.xml" title="kev's blog"><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="kev's blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a class="logo-link" href="/"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a class="nav-list-link" href="/" target="_self">BLOG</a></li><li class="nav-list-item"><a class="nav-list-link" href="/archives/" target="_self">ARCHIVE</a></li><li class="nav-list-item"><a class="nav-list-link" href="https://github.com/kitscode" target="_blank">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">About CAP</h1><div class="post-info">2020年6月9日</div><div class="post-content"><p>在如今的互联网应用体系架构中，因系统的庞大和复杂程度，一个系统往往会被拆分为不同的子系统，这样便于水平扩展和解耦。但是同时也增加了整个系统的复杂性，因为不同的子系统通过网络通信，而网络又是不可靠的，如何在这种环境下保证各节点数据备份的一致性；而若干个子系统的崩溃又如何保证整个系统的可用性；这都是一个分布式系统需要考虑和解决的问题。此篇作为分布式入门，讨论一下经典的CAP理论，和一些基础的分布式系统下的概念、问题和解决方案。</p>
+<span id="more"></span>
+
+<h2 id="CAP理论"><a href="#CAP理论" class="headerlink" title="CAP理论"></a>CAP理论</h2><p>在2000年，Eric Brewer在PODC（Principles of Distributed Computing）的研讨会上首次提出了CAP的概念，含义如下：</p>
+<ul>
+<li>C：Consistency，一致性，多个节点在系统运行中是否时刻能保证数据一致的特性。</li>
+<li>A：Availability，可用性，系统必须一直保持可用状态，“可用状态”指的是用户的每一个操作需要在指定的时间内得到反馈，无论成功或失败。</li>
+<li>P：Partition Tolerant，分区容错性，在遇到网络分区故障的时候，整个系统仍然能够保持服务。</li>
+</ul>
+<p>他还提到了一点就是：任何一个分布式系统都无法同时满足CAP中的三个条件，最多只能做到两项。即CA、AP或CP。一般来说分区容错性是个最基本的要求，所以通常在C和P之间寻求平衡。但其实Eric在2012年曾指出这个观点在实际的系统设计指导上有一定的误导性，过于简单化地描述了分布式系统设计中的问题，实际情况要复杂得多，还要看具体需求而定。</p>
+<h2 id="BASE理论"><a href="#BASE理论" class="headerlink" title="BASE理论"></a>BASE理论</h2><p>BASE理论基于CAP演化而来，它的核心思想是：<strong>即使无法达到强一致性，每个应用和业务都应当采取适当的方式来达到最终一致性。</strong>其中BASE的含义如下：</p>
+<ul>
+<li>BA：Basically Available，基本可用，即使有部分系统无法响应，也不影响基本可用性，可以损失一定的响应时间，或是将用户重定向到降级页面。</li>
+<li>S：Soft state，柔性状态，允许不同节点的数据同步存在一定的延迟。</li>
+<li>E：Eventually consistent，最终一致性，所有节点的数据副本在一定时间后都能达到一致的状态。</li>
+</ul>
+<h2 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h2><p>分布式环境不同于以往的单机环境，可以使用传统的方法在单进程内对多线程进行管理。由于客户端在不同的机器上，不同的网络环境下，此时对并发情况下资源共享的处理就要用到一些其他的方式来做互斥了，通常我们会借用一些第三方软件来实现一个“分布式锁”，常见的实现方式有如下几种：</p>
+<ul>
+<li>基于数据库：建立锁表，使用表的唯一约束特性实现获取锁的逻辑。</li>
+<li>基于Redis：使用setnx、key-value-UUID方式实现加锁。</li>
+<li>基于Zookeeper：建立资源目录，根据子节点实现资源加锁。</li>
+</ul>
+<h2 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h2><p>当一个系统被拆分成不同的子系统时，其数据库必定也会被拆分，在这种情况下，如何保证业务的顺利执行呢？也就是如何实现分布式环境下的“事务”，其中有以下实现方案可以提供给我们一点思路：</p>
+<ul>
+<li>2PC：Two phase commit，两阶段提交，第一阶段投票，各节点执行事务，写本地log，但不提交。第二阶段提交，满足所有节点运行正常时进行commit通知，否则全部回滚。</li>
+<li>3PC：Three phase commit，三阶段提交，比两阶段提交多了一个预询盘阶段，该阶段管理者会依此询问各个节点是否可以正常执行事务，是一个很轻量的操作。</li>
+<li>Paxos算法：一种一致性算法。</li>
+</ul>
+<p>2PC保护了数据一致性，在分布式系统设计中有大概三种一致性的区别：</p>
+<ul>
+<li>强一致性：在任意时刻，所有节点的数据都是一致的。</li>
+<li>弱一致性：数据更新后的一段时间里，能接受部分数据访问不了，则为弱一致性。</li>
+<li>最终一致性：不用保证任意时刻数据的一致性，但是随着时间的迁移，各节点的数据会趋向最终一致性。</li>
+</ul>
+<h2 id="柔性事务"><a href="#柔性事务" class="headerlink" title="柔性事务"></a>柔性事务</h2><p>传统事务：ACID，刚性事务，强调强一致性，即同步操作。柔性事务：弱一致性，要达到最终一致性，可以异步操作。总的来说柔性事务是利用相关业务的弹性，找到业务上对于事务过程中的不一致的容忍程度，最后找到时效和功能完整的平衡点。可分为四种不同的柔性事务：</p>
+<ul>
+<li>两阶段型：两阶段提交的典型模式，对应技术上的XA、JTA&#x2F;JTS。</li>
+<li>补偿型：TCC型事务（Try-Confirm-Cancel），一个事务分为AB两个操作，在两台机器上执行。如果A执行顺利，那么就提交，如果B执行顺利也提交顺利了，那么整个事务算完成了。如果B失败了，那么就要对操作A进行补偿，也就是undo操作。</li>
+<li>异步确保型：将一些同步的操作变为异步的，避免对数据库事务的争用，比如批量记账处理。</li>
+<li>最大努力通知型：通过通知服务器进行，允许失败，有补充机制。例如：客户交易结果通知重试、补单重试。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>分布式架构为系统的扩大和拓展提供了方便性，但是也带来了很大的复杂性，如何保证数据的一致性和系统的可用性，都是需要长期研究和探讨的话题。我们需要在业务可以接受的“Soft State”上和数据的一致性时效上做平衡和选择，也要做好各种异常的补偿措施，然后在实际应用中检验成效。</p>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://xiaomi-info.github.io/2020/01/02/distributed-transaction/">分布式事务，这一篇就够了</a><br><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/31813039">支付宝运营架构中柔性事务指的是什么</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35616810">分布式一致性之两阶段提交协议、三阶提交协议</a><br><a target="_blank" rel="noopener" href="https://xiaomi-info.github.io/2019/12/17/redis-distributed-lock/">分布式锁的实现之redis篇</a></p>
+</div></article></div></main><footer><div class="paginator"><a class="next" href="/2019/10/02/%E7%90%86%E8%A7%A3GC%E7%AE%97%E6%B3%95%E4%B8%8E%E6%94%B6%E9%9B%86%E5%99%A8/">NEXT</a></div><div class="copyright"><p>© 2018 - 2022 <a href="https://kevll.com">kevin</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/claymcleod/hexo-theme-hermes" target="_blank">hexo-theme-hermes</a>. </p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
